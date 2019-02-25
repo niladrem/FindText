@@ -40,6 +40,15 @@ class TextExtractingDataFromList(unittest.TestCase):
         pg_num = extractdata.get_num_pages(bs)
         self.assertEqual(pg_num, 0)
 
+    def test_extracting_data(self):
+        code, content = extractdata.get_page_content('https://www.tekstowo.pl/piosenki_artysty,zabili_mi_zolwia.html')
+        code, test_content = extractdata.get_author_page("Zabili Mi Żółwia")
+        self.assertEqual(content, test_content)
+
+    def test_normalization(self):
+        self.assertEqual(extractdata.normalize_text("żółć"), "zolc")
+        self.assertEqual(extractdata.normalize_text("AĄĘ"), "AAE")
+
 
 if __name__ == '__main__':
     unittest.main()

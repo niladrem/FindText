@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import urllib.request
+import re
 
 
 def get_page_content(url):
@@ -34,11 +35,21 @@ def get_songs_list(bs):
 
 
 def get_list_of_similar_authors(author):
-    pass
+    normalized_author = normalize_text(author)
+    normalized_author = re.sub('[ ]+', '+', normalized_author)
+    url = "https://www.tekstowo.pl/szukaj,wykonawca," + normalized_author.lower() + ",tytul,.html"
+    code, page = get_page_content(url)
+    page_bs = text_to_bs(page)
+    artist_list = page_bs.find('div', class_='content').find_all(class_='title')
+    return artist_list
 
 
 def get_author_page(author):
-    pass
+    normalized_author = normalize_text(author)
+    normalized_author = re.sub('[^A-Za-z0-9 _-]+', '', normalized_author)  # remove special characters
+    normalized_author = re.sub('[ -]+', '_', normalized_author)  # remove spaces
+    url = "https://www.tekstowo.pl/piosenki_artysty," + normalized_author.lower() + ".html"
+    return get_page_content(url)
 
 
 def get_list_of_given_author_and_page_num(author, page):
@@ -58,3 +69,10 @@ def get_whole_songs_list(author):
         songs_list.extend(get_list_of_given_author_and_page_num(author, i))
 
     return songs_list
+
+
+def normalize_text(input_text):
+    intab = 'ęóąśłżźćńĘÓĄŚŁŻŹĆŃ'
+    outtab = 'eoaslzzcnEOASLZZCN'
+    translator = str.maketrans(intab, outtab)
+    return input_text.translate(translator)
