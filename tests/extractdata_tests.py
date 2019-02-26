@@ -44,6 +44,9 @@ class TextExtractingDataFromList(unittest.TestCase):
         code, content = extractdata.get_page_content('https://www.tekstowo.pl/piosenki_artysty,zabili_mi_zolwia.html')
         code, test_content = extractdata.get_author_page("Zabili Mi Żółwia")
         self.assertEqual(content, test_content)
+        link, title = extractdata.get_list_of_similar_authors("kult")[0]
+        self.assertEqual(title, "Kult")
+        self.assertEqual(link, "/piosenki_artysty,kult.html")
 
     def test_normalization(self):
         self.assertEqual(extractdata.normalize_text("żółć"), "zolc")

@@ -41,7 +41,12 @@ def get_list_of_similar_authors(author):
     code, page = get_page_content(url)
     page_bs = text_to_bs(page)
     artist_list = page_bs.find('div', class_='content').find_all(class_='title')
-    return artist_list
+    out = []
+    for artist_line in artist_list:
+        link = re.search('href="([^"]+)"', str(artist_line)).group(1)
+        title = re.search('title="([^"]+)"', str(artist_line)).group(1)
+        out.append((link, title))
+    return out
 
 
 def get_author_page(author):
