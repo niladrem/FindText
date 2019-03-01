@@ -30,8 +30,14 @@ def verify_list(bs):
     return not song_list.get_text().strip() == ''
 
 
-def get_songs_list(bs):
-    pass
+def extract_list(bs):
+    song_list = bs.find('div', class_='content').find_all(class_='title')
+    out = []
+    for song_line in song_list:
+        link = re.search('href="([^"]+)"', str(song_line)).group(1)
+        title = re.search('title="([^"]+)"', str(song_line)).group(1)
+        out.append((link, title))
+    return out
 
 
 def get_list_of_similar_authors(author):
@@ -40,13 +46,7 @@ def get_list_of_similar_authors(author):
     url = "https://www.tekstowo.pl/szukaj,wykonawca," + normalized_author.lower() + ",tytul,.html"
     code, page = get_page_content(url)
     page_bs = text_to_bs(page)
-    artist_list = page_bs.find('div', class_='content').find_all(class_='title')
-    out = []
-    for artist_line in artist_list:
-        link = re.search('href="([^"]+)"', str(artist_line)).group(1)
-        title = re.search('title="([^"]+)"', str(artist_line)).group(1)
-        out.append((link, title))
-    return out
+    return extract_list(page_bs)
 
 
 def get_author_page(author):
@@ -61,7 +61,7 @@ def get_list_of_given_author_and_page_num(author, page):
     url = "https://www.tekstowo.pl/piosenki_artysty," + author + ",alfabetycznie,strona," + str(page) + ".html"
     text = get_page_content(url)
     bs = text_to_bs(text)
-    return get_songs_list(bs)
+    return extract_list(bs)
 
 
 def get_whole_songs_list(author):
@@ -74,6 +74,14 @@ def get_whole_songs_list(author):
         songs_list.extend(get_list_of_given_author_and_page_num(author, i))
 
     return songs_list
+
+
+def get_song_text(link):
+    url = "https://www.tekstowo.pl" + link
+    code, text = get_page_content(url)
+    bs = text_to_bs(text)
+    song_text = bs.find('div', class_='song-text')
+    return re.sub('Poznaj historię zmian tego tekstu', '', song_text.get_text())
 
 
 def normalize_text(input_text):
