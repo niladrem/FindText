@@ -51,7 +51,6 @@ class TextExtractingDataFromList(unittest.TestCase):
     def test_normalization(self):
         self.assertEqual(extractdata.normalize_text("żółć"), "zolc")
         self.assertEqual(extractdata.normalize_text("AĄĘ"), "AAE")
-        print(extractdata.get_song_text('/piosenka,kult,bliskie_spotkanie_3_stopnia.html'))
 
 
 if __name__ == '__main__':
