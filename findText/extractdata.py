@@ -22,7 +22,7 @@ def text_to_bs(text):
 
 def get_num_pages(bs):
     pages = bs.find_all(class_='page')
-    return int(pages[-1].get_text()) if pages else 0
+    return int(pages[-1].get_text()) if pages else 1
 
 
 def verify_list(bs):
@@ -51,22 +51,22 @@ def get_list_of_similar_authors(author):
 
 def get_author_page(author):
     normalized_author = normalize_text(author)
-    normalized_author = re.sub('[^A-Za-z0-9 _-]+', '', normalized_author)  # remove special characters
-    normalized_author = re.sub('[ -]+', '_', normalized_author)  # remove spaces
+    normalized_author = re.sub('[^A-Za-z0-9 _()-]+', '', normalized_author)  # remove special characters
+    normalized_author = re.sub('[ ()-]+', '_', normalized_author)  # remove spaces
     url = "https://www.tekstowo.pl/piosenki_artysty," + normalized_author.lower() + ".html"
-    return get_page_content(url)
+    code, page = get_page_content(url)
+    return text_to_bs(page)
 
 
 def get_list_of_given_author_and_page_num(author, page):
     url = "https://www.tekstowo.pl/piosenki_artysty," + author + ",alfabetycznie,strona," + str(page) + ".html"
-    text = get_page_content(url)
+    code, text = get_page_content(url)
     bs = text_to_bs(text)
     return extract_list(bs)
 
 
 def get_whole_songs_list(author):
-    first_page = get_author_page(author)
-    first_page_bs = text_to_bs(first_page)
+    first_page_bs = get_author_page(author)
 
     pg_num = get_num_pages(first_page_bs)
     songs_list = []
@@ -82,6 +82,11 @@ def get_song_text(link):
     bs = text_to_bs(text)
     song_text = bs.find('div', class_='song-text')
     return re.sub('Poznaj historię zmian tego tekstu', '', song_text.get_text())
+
+
+def text_contains(link, phrase):
+    text = get_song_text(link)
+    return phrase.lower() in text.lower()
 
 
 def normalize_text(input_text):

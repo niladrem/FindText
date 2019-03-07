@@ -42,7 +42,8 @@ class TextExtractingDataFromList(unittest.TestCase):
 
     def test_extracting_data(self):
         code, content = extractdata.get_page_content('https://www.tekstowo.pl/piosenki_artysty,zabili_mi_zolwia.html')
-        code, test_content = extractdata.get_author_page("Zabili Mi Żółwia")
+        content = extractdata.text_to_bs(content)
+        test_content = extractdata.get_author_page("Zabili Mi Żółwia")
         self.assertEqual(content, test_content)
         link, title = extractdata.get_list_of_similar_authors("kult")[0]
         self.assertEqual(title, "Kult")
