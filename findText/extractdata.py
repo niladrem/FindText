@@ -66,12 +66,15 @@ def get_list_of_given_author_and_page_num(author, page):
 
 
 def get_whole_songs_list(author):
+    normalized_author = normalize_text(author)
+    normalized_author = re.sub('[^A-Za-z0-9 _()-]+', '', normalized_author)  # remove special characters
+    normalized_author = re.sub('[ ()-]+', '_', normalized_author)  # remove spaces
     first_page_bs = get_author_page(author)
 
     pg_num = get_num_pages(first_page_bs)
     songs_list = []
     for i in range(1, pg_num + 1):
-        songs_list.extend(get_list_of_given_author_and_page_num(author, i))
+        songs_list.extend(get_list_of_given_author_and_page_num(normalized_author, i))
 
     return songs_list
 

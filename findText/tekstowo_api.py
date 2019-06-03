@@ -30,7 +30,6 @@ def search():
     if not extractdata.verify_list(artist_page):
         print("Artist not found. Choose one below:")
         artist_name = search_artist(artist_name, True)
-        print(artist_name)
     phrase = input("Enter phrase: ")
     songs_list = extractdata.get_whole_songs_list(artist_name)
     for song in songs_list:
